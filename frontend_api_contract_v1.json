@@ -1,0 +1,481 @@
+{
+  "contract_version": "v1",
+  "generated_from": {
+    "phase_1": "schema-driven feature engineering output",
+    "phase_2": "phase2_merged_architecture.md"
+  },
+  "shared_project_context": {
+    "hackathon_hours": 12,
+    "product_type": "web_app",
+    "implemented_domains": [
+      "paysim",
+      "ieee_cis"
+    ],
+    "extension_ready_domains": [
+      "net_banking"
+    ],
+    "out_of_mvp_scope": [
+      "blockchain"
+    ],
+    "training_environment": "kaggle",
+    "serving_environment": "fastapi_backend"
+  },
+  "frontend_status": {
+    "can_start_now": true,
+    "reason": "The response contract, feature names, alert fields, and transaction summary fields are fixed enough for frontend implementation before model training is complete."
+  },
+  "score_scale_policy": {
+    "all_scores_normalized_0_to_1": true,
+    "frontend_display_percent_optional": true
+  },
+  "endpoints": {
+    "score": {
+      "method": "POST",
+      "path": "/v1/score",
+      "request": {
+        "top_level_required": [
+          "request_id",
+          "domain",
+          "event_time",
+          "transaction",
+          "payload"
+        ],
+        "top_level_optional": [
+          "context"
+        ],
+        "domain_enum": [
+          "paysim",
+          "ieee_cis"
+        ],
+        "transaction_required": [
+          "transaction_id",
+          "amount",
+          "currency",
+          "channel"
+        ],
+        "transaction_optional": [
+          "product_code",
+          "card_network",
+          "funding_type"
+        ],
+        "context_optional": [
+          "source"
+        ],
+        "payload_by_domain": {
+          "paysim": {
+            "required": [
+              "step",
+              "type",
+              "nameOrig",
+              "nameDest",
+              "oldbalanceOrg"
+            ],
+            "optional": [
+              "newbalanceOrig",
+              "oldbalanceDest",
+              "newbalanceDest"
+            ]
+          },
+          "ieee_cis": {
+            "required": [
+              "TransactionDT",
+              "TransactionAmt",
+              "ProductCD",
+              "card1",
+              "card2",
+              "card3",
+              "card5",
+              "addr1",
+              "addr2"
+            ],
+            "optional": [
+              "card4",
+              "card6",
+              "dist1",
+              "P_emaildomain",
+              "R_emaildomain",
+              "DeviceType",
+              "DeviceInfo",
+              "id_30",
+              "id_31",
+              "id_33",
+              "identity_present"
+            ]
+          }
+        }
+      },
+      "response": {
+        "top_level_required": [
+          "request_id",
+          "status",
+          "domain",
+          "transaction_id",
+          "input_snapshot",
+          "risk",
+          "scores",
+          "signals",
+          "explanations",
+          "features",
+          "alerts",
+          "transaction_summary",
+          "model",
+          "latency_ms"
+        ],
+        "status_enum": [
+          "ok",
+          "error"
+        ],
+        "risk": {
+          "required": [
+            "score",
+            "level",
+            "decision",
+            "confidence"
+          ],
+          "level_enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "decision_enum": [
+            "allow",
+            "review",
+            "block"
+          ]
+        },
+        "input_snapshot": {
+          "required": [
+            "transaction",
+            "payload"
+          ],
+          "description": "Echo of the request fields used for scoring so the frontend can display raw input values without separate mapping."
+        },
+        "scores": {
+          "required": [
+            "heuristic",
+            "supervised",
+            "anomaly",
+            "fusion_version"
+          ],
+          "nullable_fields": [
+            "supervised",
+            "anomaly"
+          ]
+        },
+        "signal_object": {
+          "required": [
+            "code",
+            "severity",
+            "value",
+            "threshold",
+            "message"
+          ],
+          "severity_enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "explanations": {
+          "required": [
+            "top_reasons",
+            "feature_contributions"
+          ],
+          "feature_contribution_object": {
+            "required": [
+              "feature",
+              "value",
+              "impact"
+            ]
+          }
+        },
+        "alerts": {
+          "alert_object_required": [
+            "alert_id",
+            "type",
+            "priority",
+            "status",
+            "recommended_action"
+          ],
+          "priority_enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "status_enum": [
+            "open",
+            "resolved",
+            "dismissed"
+          ]
+        },
+        "model": {
+          "required": [
+            "artifact_version",
+            "mode",
+            "engine_version"
+          ],
+          "mode_enum": [
+            "heuristic_only",
+            "model_plus_rules"
+          ]
+        },
+        "feature_keys_by_domain": {
+          "paysim": [
+            "type_risk_flag",
+            "amount_to_orig_balance_ratio",
+            "orig_balance_consistency_error",
+            "sender_txn_count_24h",
+            "sender_amount_zscore_7d",
+            "sender_dest_pair_novelty"
+          ],
+          "ieee_cis": [
+            "uid_prior_frequency",
+            "amt_to_uid_median_ratio",
+            "uid_txn_count_24h",
+            "email_domain_mismatch",
+            "new_device_for_uid",
+            "identity_present"
+          ]
+        }
+      }
+    },
+    "batch": {
+      "method": "POST",
+      "path": "/v1/batch",
+      "request_shape": {
+        "required": [
+          "domain",
+          "items"
+        ]
+      },
+      "response_shape": {
+        "required": [
+          "domain",
+          "results"
+        ],
+        "result_item": "Same as /v1/score response object"
+      }
+    },
+    "alerts": {
+      "method": "GET",
+      "path": "/v1/alerts",
+      "response_shape": {
+        "required": [
+          "items"
+        ]
+      }
+    },
+    "health": {
+      "method": "GET",
+      "path": "/v1/health"
+    },
+    "admin_models": {
+      "method": "GET",
+      "path": "/v1/admin/models"
+    }
+  },
+  "frontend_view_models": {
+    "score_card": {
+      "fields": [
+        "risk.score",
+        "risk.level",
+        "risk.decision",
+        "risk.confidence",
+        "model.mode",
+        "latency_ms"
+      ]
+    },
+    "reason_panel": {
+      "fields": [
+        "explanations.top_reasons",
+        "signals",
+        "explanations.feature_contributions"
+      ]
+    },
+    "feature_table": {
+      "fields": [
+        "features"
+      ]
+    },
+    "alert_list": {
+      "fields": [
+        "alerts[].alert_id",
+        "alerts[].type",
+        "alerts[].priority",
+        "alerts[].status",
+        "alerts[].recommended_action"
+      ]
+    },
+    "transaction_summary": {
+      "fields": [
+        "transaction_summary.amount",
+        "transaction_summary.currency",
+        "transaction_summary.channel",
+        "transaction_summary.product_code",
+        "transaction_summary.card_network",
+        "transaction_summary.funding_type"
+      ]
+    },
+    "input_snapshot_panel": {
+      "fields": [
+        "input_snapshot.transaction",
+        "input_snapshot.payload"
+      ]
+    }
+  },
+  "examples": {
+    "score_request_paysim": {
+      "request_id": "4f1db8e3-4741-41d8-8df4-5ab7f8a9d901",
+      "domain": "paysim",
+      "event_time": "2026-03-12T10:15:00Z",
+      "transaction": {
+        "transaction_id": "txn_1001",
+        "amount": 125000.0,
+        "currency": "INR",
+        "channel": "upi"
+      },
+      "context": {
+        "source": "dashboard-demo"
+      },
+      "payload": {
+        "step": 278,
+        "type": "TRANSFER",
+        "nameOrig": "C123",
+        "nameDest": "C456",
+        "oldbalanceOrg": 150000.0,
+        "newbalanceOrig": 25000.0,
+        "oldbalanceDest": 10000.0,
+        "newbalanceDest": 135000.0
+      }
+    },
+    "score_request_ieee_cis": {
+      "request_id": "60bfb749-00c0-4d7c-9d54-baa8c7c86d95",
+      "domain": "ieee_cis",
+      "event_time": "2026-03-12T10:15:00Z",
+      "transaction": {
+        "transaction_id": "txn_card_2001",
+        "amount": 68.5,
+        "currency": "USD",
+        "channel": "card",
+        "product_code": "W",
+        "card_network": "visa",
+        "funding_type": "credit"
+      },
+      "context": {
+        "source": "dashboard-demo"
+      },
+      "payload": {
+        "TransactionDT": 86400,
+        "TransactionAmt": 68.5,
+        "ProductCD": "W",
+        "card1": 13926,
+        "card2": 404.0,
+        "card3": 150.0,
+        "card4": "visa",
+        "card5": 142.0,
+        "card6": "credit",
+        "addr1": 315.0,
+        "addr2": 87.0,
+        "dist1": 19.0,
+        "P_emaildomain": "gmail.com",
+        "R_emaildomain": "hotmail.com",
+        "DeviceType": "mobile",
+        "DeviceInfo": "iOS Device",
+        "id_30": "iOS 11.1.2",
+        "id_31": "mobile safari 11.0",
+        "id_33": "1334x750",
+        "identity_present": 1
+      }
+    },
+    "score_response": {
+      "request_id": "4f1db8e3-4741-41d8-8df4-5ab7f8a9d901",
+      "status": "ok",
+      "domain": "paysim",
+      "transaction_id": "txn_1001",
+      "input_snapshot": {
+        "transaction": {
+          "transaction_id": "txn_1001",
+          "amount": 125000.0,
+          "currency": "INR",
+          "channel": "upi"
+        },
+        "payload": {
+          "step": 278,
+          "type": "TRANSFER",
+          "nameOrig": "C123",
+          "nameDest": "C456",
+          "oldbalanceOrg": 150000.0,
+          "newbalanceOrig": 25000.0,
+          "oldbalanceDest": 10000.0,
+          "newbalanceDest": 135000.0
+        }
+      },
+      "risk": {
+        "score": 0.864,
+        "level": "high",
+        "decision": "review",
+        "confidence": 0.82
+      },
+      "scores": {
+        "heuristic": 0.88,
+        "supervised": 0.91,
+        "anomaly": null,
+        "fusion_version": "default_v1"
+      },
+      "signals": [
+        {
+          "code": "HIGH_AMOUNT_TO_BALANCE_RATIO",
+          "severity": "high",
+          "value": 0.8333,
+          "threshold": 0.7,
+          "message": "Transfer amount is unusually large relative to sender balance."
+        }
+      ],
+      "explanations": {
+        "top_reasons": [
+          "Large transfer relative to available balance",
+          "New sender-beneficiary pair",
+          "Sender activity is elevated in the last 24 hours"
+        ],
+        "feature_contributions": [
+          {
+            "feature": "amount_to_orig_balance_ratio",
+            "value": 0.8333,
+            "impact": 0.31
+          }
+        ]
+      },
+      "features": {
+        "type_risk_flag": 1,
+        "amount_to_orig_balance_ratio": 0.8333,
+        "orig_balance_consistency_error": 0.0,
+        "sender_txn_count_24h": 6,
+        "sender_amount_zscore_7d": 2.9,
+        "sender_dest_pair_novelty": 1
+      },
+      "alerts": [
+        {
+          "alert_id": "alrt_9c3b",
+          "type": "suspicious_transaction",
+          "priority": "high",
+          "status": "open",
+          "recommended_action": "step_up_verification"
+        }
+      ],
+      "transaction_summary": {
+        "amount": 125000.0,
+        "currency": "INR",
+        "channel": "upi",
+        "product_code": null,
+        "card_network": null,
+        "funding_type": null
+      },
+      "model": {
+        "artifact_version": "v1",
+        "mode": "model_plus_rules",
+        "engine_version": "0.1.0"
+      },
+      "latency_ms": 24
+    }
+  }
+}

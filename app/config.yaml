@@ -1,0 +1,18 @@
+engine_version: "0.1.0"
+api:
+  prefix: "/v1"
+thresholds:
+  low_to_medium: 0.4
+  medium_to_high: 0.75
+  review_to_block: 0.9
+artifact_paths:
+  manifests_dir: "artifacts/manifests"
+  paysim_latest: "artifacts/manifests/paysim_latest.json"
+  ieee_cis_latest: "artifacts/manifests/ieee_cis_latest.json"
+defaults:
+  artifact_version: "unavailable"
+  fusion_version: "default_v1"
+  model_mode: "heuristic_only"
+supported_domains:
+  - "paysim"
+  - "ieee_cis"

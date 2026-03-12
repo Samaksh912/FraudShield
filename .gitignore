@@ -1,0 +1,20 @@
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Windows metadata
+*:Zone.Identifier
+
+# Local training outputs and bulky Kaggle assets
+training/kaggle/archive (12).zip
+training/kaggle/results.zip
+training/kaggle/Paysim outputs/
+
+# Runtime artifacts produced after training/integration
+artifacts/paysim/v*/
+artifacts/ieee_cis/v*/
+artifacts/manifests/*_latest.json

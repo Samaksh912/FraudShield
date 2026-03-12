@@ -1,0 +1,8 @@
+mvp_online_features:
+  - uid_prior_frequency
+  - amt_to_uid_median_ratio
+  - uid_txn_count_24h
+  - email_domain_mismatch
+  - new_device_for_uid
+  - identity_present
+

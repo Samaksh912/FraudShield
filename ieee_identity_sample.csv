@@ -1,0 +1,16 @@
+TransactionID,id_01,id_02,id_03,id_04,id_05,id_06,id_07,id_08,id_09,id_10,id_11,id_12,id_13,id_14,id_15,id_16,id_17,id_18,id_19,id_20,id_21,id_22,id_23,id_24,id_25,id_26,id_27,id_28,id_29,id_30,id_31,id_32,id_33,id_34,id_35,id_36,id_37,id_38,DeviceType,DeviceInfo
+3053583,-25.0,381258.0,,,0.0,0.0,,,,,100.0,NotFound,49.0,,Unknown,,225.0,,266.0,325.0,,,,,,,,New,NotFound,,mobile safari 10.0,,,,F,F,F,T,mobile,
+3075699,-5.0,158306.0,,,0.0,0.0,,,,,100.0,NotFound,49.0,-480.0,New,NotFound,166.0,,454.0,222.0,,,,,,,,New,NotFound,iOS 11.2.1,mobile safari 11.0,32.0,1334x750,match_status:1,T,F,F,F,mobile,iOS Device
+3094766,-5.0,98763.0,0.0,0.0,0.0,0.0,,,0.0,0.0,100.0,NotFound,49.0,-300.0,Found,Found,166.0,13.0,100.0,549.0,,,,,,,,Found,Found,Android 7.0,chrome 63.0 for android,32.0,2220x1080,match_status:2,T,F,T,F,mobile,SM-G950U Build/NRD90M
+3181418,-35.0,417091.0,,,0.0,0.0,,,,,100.0,NotFound,49.0,,Unknown,,225.0,,266.0,507.0,,,,,,,,New,NotFound,,mobile safari 11.0,,,,F,F,F,F,mobile,
+3213045,-5.0,104993.0,,,0.0,0.0,,,,,100.0,NotFound,49.0,-300.0,New,NotFound,166.0,15.0,390.0,489.0,,,,,,,,New,NotFound,Mac OS X 10_13_2,safari generic,24.0,2560x1440,match_status:2,T,F,F,F,desktop,MacOS
+3236399,-5.0,76527.0,0.0,0.0,0.0,0.0,,,0.0,0.0,100.0,Found,52.0,-300.0,Found,Found,166.0,,542.0,600.0,,,,,,,,Found,Found,Windows 10,chrome 63.0,24.0,1366x768,match_status:2,T,F,T,T,desktop,Windows
+3279032,-5.0,110170.0,0.0,0.0,0.0,0.0,,,0.0,0.0,100.0,NotFound,52.0,-300.0,Found,Found,166.0,,492.0,521.0,,,,,,,,Found,Found,Windows 8.1,chrome 58.0,24.0,1366x768,,T,F,T,T,desktop,Windows
+3307619,-5.0,794.0,0.0,0.0,0.0,0.0,,,0.0,0.0,100.0,Found,52.0,-300.0,Found,Found,166.0,,548.0,161.0,,,,,,,,Found,Found,Windows 10,chrome 64.0,24.0,1366x768,match_status:2,T,F,T,T,desktop,Windows
+3357788,-15.0,84435.0,0.0,0.0,-4.0,-6.0,,,0.0,0.0,100.0,NotFound,52.0,,Found,Found,225.0,,266.0,325.0,,,,,,,,Found,Found,,chrome generic,,,,F,F,T,F,desktop,Windows
+3364204,-5.0,340551.0,,,0.0,0.0,,,,,100.0,NotFound,52.0,,New,NotFound,225.0,,266.0,139.0,,,,,,,,New,NotFound,,chrome 64.0,,,,F,F,T,F,desktop,Windows
+3365962,-20.0,375662.0,,,0.0,0.0,,,,,100.0,NotFound,33.0,,Unknown,,225.0,,427.0,507.0,,,,,,,,New,NotFound,,mobile safari generic,,,,F,F,F,F,mobile,
+3377527,-5.0,343301.0,,,0.0,0.0,,,,,100.0,NotFound,52.0,,New,NotFound,225.0,,607.0,507.0,,,,,,,,New,NotFound,,chrome 65.0,,,,F,F,T,F,desktop,Windows
+3395805,-5.0,341150.0,,,0.0,0.0,,,,,100.0,NotFound,64.0,,New,NotFound,166.0,,312.0,146.0,,,,,,,,New,NotFound,,chrome 65.0 for android,,,match_status:2,F,F,T,F,mobile,Nexus
+3396876,-15.0,,,,,,,,,,,NotFound,20.0,,,,,,,,,,,,,,,,,,,,,,,,,,,
+3566997,-95.0,352582.0,3.0,0.0,-10.0,-29.0,,,3.0,0.0,100.0,NotFound,27.0,,Found,Found,225.0,17.0,567.0,507.0,,,,,,,,Found,Found,,chrome 66.0 for android,,,,F,F,T,F,mobile,Moto Z2 Play Build/NPSS26.118-19-14

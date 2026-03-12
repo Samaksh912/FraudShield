@@ -1,0 +1,8 @@
+mvp_online_features:
+  - type_risk_flag
+  - amount_to_orig_balance_ratio
+  - orig_balance_consistency_error
+  - sender_txn_count_24h
+  - sender_amount_zscore_7d
+  - sender_dest_pair_novelty
+

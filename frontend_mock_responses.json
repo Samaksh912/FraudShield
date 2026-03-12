@@ -1,0 +1,607 @@
+{
+  "contract_version": "v1",
+  "generated_from": "frontend_api_contract_v1.json",
+  "mocks": {
+    "score_responses": [
+      {
+        "scenario": "paysim_high_risk_review",
+        "request": {
+          "request_id": "4f1db8e3-4741-41d8-8df4-5ab7f8a9d901",
+          "domain": "paysim",
+          "event_time": "2026-03-12T10:15:00Z",
+          "transaction": {
+            "transaction_id": "txn_1001",
+            "amount": 125000.0,
+            "currency": "INR",
+            "channel": "upi"
+          },
+          "context": {
+            "source": "dashboard-demo"
+          },
+          "payload": {
+            "step": 278,
+            "type": "TRANSFER",
+            "nameOrig": "C123",
+            "nameDest": "C456",
+            "oldbalanceOrg": 150000.0,
+            "newbalanceOrig": 25000.0,
+            "oldbalanceDest": 10000.0,
+            "newbalanceDest": 135000.0
+          }
+        },
+        "response": {
+          "request_id": "4f1db8e3-4741-41d8-8df4-5ab7f8a9d901",
+          "status": "ok",
+          "domain": "paysim",
+          "transaction_id": "txn_1001",
+          "input_snapshot": {
+            "transaction": {
+              "transaction_id": "txn_1001",
+              "amount": 125000.0,
+              "currency": "INR",
+              "channel": "upi"
+            },
+            "payload": {
+              "step": 278,
+              "type": "TRANSFER",
+              "nameOrig": "C123",
+              "nameDest": "C456",
+              "oldbalanceOrg": 150000.0,
+              "newbalanceOrig": 25000.0,
+              "oldbalanceDest": 10000.0,
+              "newbalanceDest": 135000.0
+            }
+          },
+          "risk": {
+            "score": 0.864,
+            "level": "high",
+            "decision": "review",
+            "confidence": 0.82
+          },
+          "scores": {
+            "heuristic": 0.88,
+            "supervised": 0.91,
+            "anomaly": null,
+            "fusion_version": "default_v1"
+          },
+          "signals": [
+            {
+              "code": "HIGH_AMOUNT_TO_BALANCE_RATIO",
+              "severity": "high",
+              "value": 0.8333,
+              "threshold": 0.7,
+              "message": "Transfer amount is unusually large relative to sender balance."
+            },
+            {
+              "code": "NEW_BENEFICIARY",
+              "severity": "medium",
+              "value": 1,
+              "threshold": 1,
+              "message": "Sender is transacting with a new beneficiary."
+            }
+          ],
+          "explanations": {
+            "top_reasons": [
+              "Large transfer relative to available balance",
+              "New sender-beneficiary pair",
+              "Sender activity is elevated in the last 24 hours"
+            ],
+            "feature_contributions": [
+              {
+                "feature": "amount_to_orig_balance_ratio",
+                "value": 0.8333,
+                "impact": 0.31
+              },
+              {
+                "feature": "sender_dest_pair_novelty",
+                "value": 1,
+                "impact": 0.27
+              },
+              {
+                "feature": "sender_txn_count_24h",
+                "value": 6,
+                "impact": 0.18
+              }
+            ]
+          },
+          "features": {
+            "type_risk_flag": 1,
+            "amount_to_orig_balance_ratio": 0.8333,
+            "orig_balance_consistency_error": 0.0,
+            "sender_txn_count_24h": 6,
+            "sender_amount_zscore_7d": 2.9,
+            "sender_dest_pair_novelty": 1
+          },
+          "alerts": [
+            {
+              "alert_id": "alrt_9c3b",
+              "type": "suspicious_transaction",
+              "priority": "high",
+              "status": "open",
+              "recommended_action": "step_up_verification"
+            }
+          ],
+          "transaction_summary": {
+            "amount": 125000.0,
+            "currency": "INR",
+            "channel": "upi",
+            "product_code": null,
+            "card_network": null,
+            "funding_type": null
+          },
+          "model": {
+            "artifact_version": "v1",
+            "mode": "model_plus_rules",
+            "engine_version": "0.1.0"
+          },
+          "latency_ms": 24
+        }
+      },
+      {
+        "scenario": "paysim_low_risk_allow",
+        "request": {
+          "request_id": "7ce8c6d5-35c0-4a69-b696-df25c0904742",
+          "domain": "paysim",
+          "event_time": "2026-03-12T10:25:00Z",
+          "transaction": {
+            "transaction_id": "txn_1002",
+            "amount": 950.0,
+            "currency": "INR",
+            "channel": "upi"
+          },
+          "context": {
+            "source": "dashboard-demo"
+          },
+          "payload": {
+            "step": 279,
+            "type": "PAYMENT",
+            "nameOrig": "C777",
+            "nameDest": "M123",
+            "oldbalanceOrg": 85200.0,
+            "newbalanceOrig": 84250.0,
+            "oldbalanceDest": 0.0,
+            "newbalanceDest": 0.0
+          }
+        },
+        "response": {
+          "request_id": "7ce8c6d5-35c0-4a69-b696-df25c0904742",
+          "status": "ok",
+          "domain": "paysim",
+          "transaction_id": "txn_1002",
+          "input_snapshot": {
+            "transaction": {
+              "transaction_id": "txn_1002",
+              "amount": 950.0,
+              "currency": "INR",
+              "channel": "upi"
+            },
+            "payload": {
+              "step": 279,
+              "type": "PAYMENT",
+              "nameOrig": "C777",
+              "nameDest": "M123",
+              "oldbalanceOrg": 85200.0,
+              "newbalanceOrig": 84250.0,
+              "oldbalanceDest": 0.0,
+              "newbalanceDest": 0.0
+            }
+          },
+          "risk": {
+            "score": 0.11,
+            "level": "low",
+            "decision": "allow",
+            "confidence": 0.9
+          },
+          "scores": {
+            "heuristic": 0.12,
+            "supervised": null,
+            "anomaly": null,
+            "fusion_version": "default_v1"
+          },
+          "signals": [],
+          "explanations": {
+            "top_reasons": [
+              "Transaction amount is consistent with recent sender behavior",
+              "No high-risk transfer pattern detected",
+              "No unusual beneficiary novelty signal triggered"
+            ],
+            "feature_contributions": [
+              {
+                "feature": "amount_to_orig_balance_ratio",
+                "value": 0.0112,
+                "impact": -0.1
+              }
+            ]
+          },
+          "features": {
+            "type_risk_flag": 0,
+            "amount_to_orig_balance_ratio": 0.0112,
+            "orig_balance_consistency_error": 0.0,
+            "sender_txn_count_24h": 1,
+            "sender_amount_zscore_7d": -0.4,
+            "sender_dest_pair_novelty": 0
+          },
+          "alerts": [],
+          "transaction_summary": {
+            "amount": 950.0,
+            "currency": "INR",
+            "channel": "upi",
+            "product_code": null,
+            "card_network": null,
+            "funding_type": null
+          },
+          "model": {
+            "artifact_version": "v1",
+            "mode": "heuristic_only",
+            "engine_version": "0.1.0"
+          },
+          "latency_ms": 11
+        }
+      },
+      {
+        "scenario": "ieee_cis_high_risk_block",
+        "request": {
+          "request_id": "60bfb749-00c0-4d7c-9d54-baa8c7c86d95",
+          "domain": "ieee_cis",
+          "event_time": "2026-03-12T11:05:00Z",
+          "transaction": {
+            "transaction_id": "txn_card_2001",
+            "amount": 68.5,
+            "currency": "USD",
+            "channel": "card",
+            "product_code": "W",
+            "card_network": "visa",
+            "funding_type": "credit"
+          },
+          "context": {
+            "source": "dashboard-demo"
+          },
+          "payload": {
+            "TransactionDT": 86400,
+            "TransactionAmt": 68.5,
+            "ProductCD": "W",
+            "card1": 13926,
+            "card2": 404.0,
+            "card3": 150.0,
+            "card4": "visa",
+            "card5": 142.0,
+            "card6": "credit",
+            "addr1": 315.0,
+            "addr2": 87.0,
+            "dist1": 19.0,
+            "P_emaildomain": "gmail.com",
+            "R_emaildomain": "hotmail.com",
+            "DeviceType": "mobile",
+            "DeviceInfo": "iOS Device",
+            "id_30": "iOS 11.1.2",
+            "id_31": "mobile safari 11.0",
+            "id_33": "1334x750",
+            "identity_present": 1
+          }
+        },
+        "response": {
+          "request_id": "60bfb749-00c0-4d7c-9d54-baa8c7c86d95",
+          "status": "ok",
+          "domain": "ieee_cis",
+          "transaction_id": "txn_card_2001",
+          "input_snapshot": {
+            "transaction": {
+              "transaction_id": "txn_card_2001",
+              "amount": 68.5,
+              "currency": "USD",
+              "channel": "card",
+              "product_code": "W",
+              "card_network": "visa",
+              "funding_type": "credit"
+            },
+            "payload": {
+              "TransactionDT": 86400,
+              "TransactionAmt": 68.5,
+              "ProductCD": "W",
+              "card1": 13926,
+              "card2": 404.0,
+              "card3": 150.0,
+              "card4": "visa",
+              "card5": 142.0,
+              "card6": "credit",
+              "addr1": 315.0,
+              "addr2": 87.0,
+              "dist1": 19.0,
+              "P_emaildomain": "gmail.com",
+              "R_emaildomain": "hotmail.com",
+              "DeviceType": "mobile",
+              "DeviceInfo": "iOS Device",
+              "id_30": "iOS 11.1.2",
+              "id_31": "mobile safari 11.0",
+              "id_33": "1334x750",
+              "identity_present": 1
+            }
+          },
+          "risk": {
+            "score": 0.931,
+            "level": "high",
+            "decision": "block",
+            "confidence": 0.87
+          },
+          "scores": {
+            "heuristic": 0.86,
+            "supervised": 0.95,
+            "anomaly": 0.74,
+            "fusion_version": "default_v1"
+          },
+          "signals": [
+            {
+              "code": "NEW_DEVICE_FOR_UID",
+              "severity": "high",
+              "value": 1,
+              "threshold": 1,
+              "message": "Transaction originates from a new device signature for this entity."
+            },
+            {
+              "code": "EMAIL_DOMAIN_MISMATCH",
+              "severity": "medium",
+              "value": 1,
+              "threshold": 1,
+              "message": "Purchaser and recipient email domains do not match."
+            }
+          ],
+          "explanations": {
+            "top_reasons": [
+              "New device detected for this card-address entity",
+              "Entity transaction velocity is elevated in the last 24 hours",
+              "Email domain mismatch increased card-not-present risk"
+            ],
+            "feature_contributions": [
+              {
+                "feature": "new_device_for_uid",
+                "value": 1,
+                "impact": 0.34
+              },
+              {
+                "feature": "uid_txn_count_24h",
+                "value": 11,
+                "impact": 0.24
+              },
+              {
+                "feature": "email_domain_mismatch",
+                "value": 1,
+                "impact": 0.17
+              }
+            ]
+          },
+          "features": {
+            "uid_prior_frequency": 0.0014,
+            "amt_to_uid_median_ratio": 3.8,
+            "uid_txn_count_24h": 11,
+            "email_domain_mismatch": 1,
+            "new_device_for_uid": 1,
+            "identity_present": 1
+          },
+          "alerts": [
+            {
+              "alert_id": "alrt_41ad",
+              "type": "suspicious_transaction",
+              "priority": "high",
+              "status": "open",
+              "recommended_action": "block_and_review"
+            }
+          ],
+          "transaction_summary": {
+            "amount": 68.5,
+            "currency": "USD",
+            "channel": "card",
+            "product_code": "W",
+            "card_network": "visa",
+            "funding_type": "credit"
+          },
+          "model": {
+            "artifact_version": "v1",
+            "mode": "model_plus_rules",
+            "engine_version": "0.1.0"
+          },
+          "latency_ms": 31
+        }
+      },
+      {
+        "scenario": "ieee_cis_medium_risk_review",
+        "request": {
+          "request_id": "c7a1ec64-3526-45cf-88d5-c4fb5e86b65d",
+          "domain": "ieee_cis",
+          "event_time": "2026-03-12T11:20:00Z",
+          "transaction": {
+            "transaction_id": "txn_card_2002",
+            "amount": 149.99,
+            "currency": "USD",
+            "channel": "card",
+            "product_code": "W",
+            "card_network": "mastercard",
+            "funding_type": "debit"
+          },
+          "context": {
+            "source": "dashboard-demo"
+          },
+          "payload": {
+            "TransactionDT": 87020,
+            "TransactionAmt": 149.99,
+            "ProductCD": "W",
+            "card1": 2755,
+            "card2": 490.0,
+            "card3": 150.0,
+            "card4": "mastercard",
+            "card5": 102.0,
+            "card6": "debit",
+            "addr1": 325.0,
+            "addr2": 87.0,
+            "dist1": 287.0,
+            "P_emaildomain": "outlook.com",
+            "R_emaildomain": "outlook.com",
+            "DeviceType": "desktop",
+            "DeviceInfo": "Windows",
+            "id_30": "Windows 10",
+            "id_31": "chrome 62.0",
+            "id_33": "1920x1080",
+            "identity_present": 1
+          }
+        },
+        "response": {
+          "request_id": "c7a1ec64-3526-45cf-88d5-c4fb5e86b65d",
+          "status": "ok",
+          "domain": "ieee_cis",
+          "transaction_id": "txn_card_2002",
+          "input_snapshot": {
+            "transaction": {
+              "transaction_id": "txn_card_2002",
+              "amount": 149.99,
+              "currency": "USD",
+              "channel": "card",
+              "product_code": "W",
+              "card_network": "mastercard",
+              "funding_type": "debit"
+            },
+            "payload": {
+              "TransactionDT": 87020,
+              "TransactionAmt": 149.99,
+              "ProductCD": "W",
+              "card1": 2755,
+              "card2": 490.0,
+              "card3": 150.0,
+              "card4": "mastercard",
+              "card5": 102.0,
+              "card6": "debit",
+              "addr1": 325.0,
+              "addr2": 87.0,
+              "dist1": 287.0,
+              "P_emaildomain": "outlook.com",
+              "R_emaildomain": "outlook.com",
+              "DeviceType": "desktop",
+              "DeviceInfo": "Windows",
+              "id_30": "Windows 10",
+              "id_31": "chrome 62.0",
+              "id_33": "1920x1080",
+              "identity_present": 1
+            }
+          },
+          "risk": {
+            "score": 0.58,
+            "level": "medium",
+            "decision": "review",
+            "confidence": 0.71
+          },
+          "scores": {
+            "heuristic": 0.55,
+            "supervised": null,
+            "anomaly": 0.61,
+            "fusion_version": "default_v1"
+          },
+          "signals": [
+            {
+              "code": "HIGH_UID_VELOCITY",
+              "severity": "medium",
+              "value": 5,
+              "threshold": 4,
+              "message": "Entity has elevated card activity in the last 24 hours."
+            }
+          ],
+          "explanations": {
+            "top_reasons": [
+              "Entity velocity is above normal",
+              "Transaction amount is moderately above historical median",
+              "Identity context is present but not strongly stabilizing"
+            ],
+            "feature_contributions": [
+              {
+                "feature": "uid_txn_count_24h",
+                "value": 5,
+                "impact": 0.22
+              },
+              {
+                "feature": "amt_to_uid_median_ratio",
+                "value": 1.9,
+                "impact": 0.19
+              }
+            ]
+          },
+          "features": {
+            "uid_prior_frequency": 0.015,
+            "amt_to_uid_median_ratio": 1.9,
+            "uid_txn_count_24h": 5,
+            "email_domain_mismatch": 0,
+            "new_device_for_uid": 0,
+            "identity_present": 1
+          },
+          "alerts": [
+            {
+              "alert_id": "alrt_77bf",
+              "type": "suspicious_transaction",
+              "priority": "medium",
+              "status": "open",
+              "recommended_action": "manual_review"
+            }
+          ],
+          "transaction_summary": {
+            "amount": 149.99,
+            "currency": "USD",
+            "channel": "card",
+            "product_code": "W",
+            "card_network": "mastercard",
+            "funding_type": "debit"
+          },
+          "model": {
+            "artifact_version": "v1",
+            "mode": "heuristic_only",
+            "engine_version": "0.1.0"
+          },
+          "latency_ms": 18
+        }
+      }
+    ],
+    "alerts_response": {
+      "items": [
+        {
+          "alert_id": "alrt_9c3b",
+          "type": "suspicious_transaction",
+          "priority": "high",
+          "status": "open",
+          "recommended_action": "step_up_verification",
+          "domain": "paysim",
+          "transaction_id": "txn_1001",
+          "risk_score": 0.864
+        },
+        {
+          "alert_id": "alrt_41ad",
+          "type": "suspicious_transaction",
+          "priority": "high",
+          "status": "open",
+          "recommended_action": "block_and_review",
+          "domain": "ieee_cis",
+          "transaction_id": "txn_card_2001",
+          "risk_score": 0.931
+        },
+        {
+          "alert_id": "alrt_77bf",
+          "type": "suspicious_transaction",
+          "priority": "medium",
+          "status": "open",
+          "recommended_action": "manual_review",
+          "domain": "ieee_cis",
+          "transaction_id": "txn_card_2002",
+          "risk_score": 0.58
+        }
+      ]
+    },
+    "health_response": {
+      "status": "ok",
+      "engine_version": "0.1.0",
+      "domains": {
+        "paysim": {
+          "mode": "model_plus_rules",
+          "artifact_version": "v1"
+        },
+        "ieee_cis": {
+          "mode": "heuristic_only",
+          "artifact_version": null
+        }
+      }
+    }
+  }
+}
