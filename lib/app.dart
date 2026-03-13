@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'core/provider/alerts_provider.dart';
+import 'core/provider/analytics_provider.dart';
+import 'core/provider/dashboard_provider.dart';
+import 'core/provider/transactions_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/signup_screen.dart';
@@ -19,12 +22,18 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // AlertsProvider is shared between DashboardScreen and AlertsScreen.
-        // It is instantiated once here; both screens read the same instance.
         ChangeNotifierProvider<AlertsProvider>(
           create: (_) => AlertsProvider(),
         ),
-        // Add future providers here (e.g. TransactionsProvider, ScoreProvider)
+        ChangeNotifierProvider<DashboardProvider>(
+          create: (_) => DashboardProvider(),
+        ),
+        ChangeNotifierProvider<TransactionsProvider>(
+          create: (_) => TransactionsProvider(),
+        ),
+        ChangeNotifierProvider<AnalyticsProvider>(
+          create: (_) => AnalyticsProvider(),
+        ),
       ],
       child: MaterialApp.router(
         title: 'FraudShield',

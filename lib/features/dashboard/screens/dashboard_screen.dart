@@ -10,9 +10,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../core/provider/alerts_provider.dart';
+import '../../../core/provider/dashboard_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/mock_data.dart';
 import '../../../shared/widgets/app_shell.dart';
 import '../../../shared/widgets/domain_split_chart.dart';
 import '../../../shared/widgets/fraud_trend_chart.dart';
@@ -30,37 +30,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // Kick off alert fetch once; provider is idempotent while loading.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<AlertsProvider>();
-      if (provider.state == AlertsLoadState.idle) {
-        provider.loadAlerts();
+      final alertsProvider = context.read<AlertsProvider>();
+      if (alertsProvider.state == AlertsLoadState.idle) {
+        alertsProvider.loadAlerts();
+      }
+      final dashProvider = context.read<DashboardProvider>();
+      if (dashProvider.state == DashboardLoadState.idle) {
+        dashProvider.loadDashboard();
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final stats  = MockData.dashboardStats;
     final numFmt = NumberFormat('#,###');
 
     return AppShell(
       currentRoute: '/dashboard',
       pageTitle: 'Dashboard',
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 24),
-            _buildKpiRow(stats, numFmt),
-            const SizedBox(height: 20),
-            _buildChartsRow(),
-            const SizedBox(height: 20),
-            _buildBottomRow(),
-          ],
-        ),
+      child: Consumer<DashboardProvider>(
+        builder: (context, dashProvider, _) {
+          final stats = dashProvider.stats;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 24),
+                if (dashProvider.isLoading)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(48),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else ...[
+                  _buildKpiRow(stats, numFmt),
+                  const SizedBox(height: 20),
+                  _buildChartsRow(dashProvider),
+                  const SizedBox(height: 20),
+                  _buildBottomRow(dashProvider),
+                ],
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -157,19 +173,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildChartsRow() {
-    return const Row(
+  Widget _buildChartsRow(DashboardProvider dashProvider) {
+    return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 3, child: FraudTrendChart()),
-          SizedBox(width: 16),
-          Expanded(flex: 2, child: DomainSplitChart()),
+          Expanded(flex: 3, child: FraudTrendChart(data: dashProvider.fraudTrend)),
+          const SizedBox(width: 16),
+          Expanded(flex: 2, child: DomainSplitChart(data: dashProvider.domainSplit)),
         ]);
   }
 
-  Widget _buildBottomRow() {
+  Widget _buildBottomRow(DashboardProvider dashProvider) {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Expanded(flex: 2, child: _RiskDistributionChart()),
+      Expanded(flex: 2, child: _RiskDistributionChart(data: dashProvider.riskDistribution)),
       const SizedBox(width: 16),
       const Expanded(flex: 3, child: RecentAlertsList()),
     ]);
@@ -178,9 +194,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 // ── Risk distribution chart (unchanged) ─────────────────────────────────────
 class _RiskDistributionChart extends StatelessWidget {
+  final List<Map<String, dynamic>> data;
+  const _RiskDistributionChart({required this.data});
+
   @override
   Widget build(BuildContext context) {
-    final data = MockData.riskDistribution;
     const total = 12847;
 
     return GradientCard(

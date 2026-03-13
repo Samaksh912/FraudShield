@@ -51,11 +51,11 @@ class MetricCard extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: AppColors.surface, // Dark inner background
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: accentColor.withOpacity(0.3)),
+                    border: Border.all(color: accentColor.withValues(alpha: 0.3)),
                     boxShadow: [
                       // Inner ambient glow
                       BoxShadow(
-                        color: accentColor.withOpacity(0.2),
+                        color: accentColor.withValues(alpha: 0.2),
                         blurRadius: 12,
                         spreadRadius: 2,
                       )

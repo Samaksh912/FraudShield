@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/mock_data.dart';
-import '../widgets/gradient_card.dart';  // <-- import
+import '../widgets/gradient_card.dart';
 
 class FraudTrendChart extends StatelessWidget {
-  const FraudTrendChart({super.key});
+  final List<Map<String, dynamic>> data;
+  const FraudTrendChart({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
-    final data = MockData.fraudTrend;
 
     return GradientCard(
       padding: const EdgeInsets.all(20),
@@ -44,7 +43,7 @@ class FraudTrendChart extends StatelessWidget {
                   show: true,
                   horizontalInterval: 3000,
                   getDrawingHorizontalLine: (_) => FlLine(
-                      color: AppColors.border.withOpacity(0.5), strokeWidth: 1),
+                      color: AppColors.border.withValues(alpha: 0.5), strokeWidth: 1),
                   drawVerticalLine: false,
                 ),
                 titlesData: FlTitlesData(
@@ -105,7 +104,7 @@ class FraudTrendChart extends StatelessWidget {
                     }).toList();
                   },
                   touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (touchedSpot) => AppColors.cardHover.withOpacity(0.95), // Darker, sleeker tooltip bg
+                    getTooltipColor: (touchedSpot) => AppColors.cardHover.withValues(alpha: 0.95),
                     tooltipRoundedRadius: 8,
                     tooltipPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     tooltipBorder: const BorderSide(color: AppColors.border, width: 1.5),
@@ -140,7 +139,7 @@ class FraudTrendChart extends StatelessWidget {
       barWidth: 3, // Thicker lines
       isStrokeCapRound: true,
       shadow: Shadow(
-        color: color.withOpacity(0.5), // Neon glow effect
+        color: color.withValues(alpha: 0.5),
         blurRadius: 8,
         offset: const Offset(0, 3),
       ),
@@ -152,8 +151,8 @@ class FraudTrendChart extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            color.withOpacity(0.3),
-            color.withOpacity(0.0)
+            color.withValues(alpha: 0.3),
+            color.withValues(alpha: 0.0)
           ],
           stops: const [0.0, 1.0], // Smooth fade out
         ),

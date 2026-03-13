@@ -34,6 +34,17 @@ class RiskSignal {
     required this.threshold,
     required this.message,
   });
+
+  factory RiskSignal.fromJson(Map<String, dynamic> json) {
+    return RiskSignal(
+      code: json['code'] as String,
+      severity: SignalSeverity.values.firstWhere(
+        (e) => e.name == json['severity'], orElse: () => SignalSeverity.low),
+      value: (json['value'] as num).toDouble(),
+      threshold: (json['threshold'] as num).toDouble(),
+      message: json['message'] as String,
+    );
+  }
 }
 
 // One feature_contribution row (from response.explanations.feature_contributions[])
@@ -47,6 +58,14 @@ class FeatureContribution {
     required this.value,
     required this.impact,
   });
+
+  factory FeatureContribution.fromJson(Map<String, dynamic> json) {
+    return FeatureContribution(
+      feature: json['feature'] as String,
+      value: (json['value'] as num).toDouble(),
+      impact: (json['impact'] as num).toDouble(),
+    );
+  }
 }
 
 // One alert embedded in the score response (from response.alerts[])
@@ -64,6 +83,18 @@ class EmbeddedAlert {
     required this.status,
     required this.recommendedAction,
   });
+
+  factory EmbeddedAlert.fromJson(Map<String, dynamic> json) {
+    return EmbeddedAlert(
+      alertId: json['alert_id'] as String,
+      type: json['type'] as String,
+      priority: AlertPriority.values.firstWhere(
+        (e) => e.name == json['priority'], orElse: () => AlertPriority.low),
+      status: AlertStatus.values.firstWhere(
+        (e) => e.name == json['status'], orElse: () => AlertStatus.open),
+      recommendedAction: json['recommended_action'] as String,
+    );
+  }
 }
 
 // scores sub-object (heuristic / supervised / anomaly breakdown)
@@ -79,6 +110,15 @@ class ScoreBreakdown {
     this.anomaly,
     required this.fusionVersion,
   });
+
+  factory ScoreBreakdown.fromJson(Map<String, dynamic> json) {
+    return ScoreBreakdown(
+      heuristic: (json['heuristic'] as num).toDouble(),
+      supervised: json['supervised'] != null ? (json['supervised'] as num).toDouble() : null,
+      anomaly: json['anomaly'] != null ? (json['anomaly'] as num).toDouble() : null,
+      fusionVersion: json['fusion_version'] as String? ?? 'default_v1',
+    );
+  }
 }
 
 // model sub-object
@@ -95,6 +135,14 @@ class ModelInfo {
 
   String get modeLabel => mode == ModelMode.heuristic_only
       ? 'Heuristic Only' : 'Model + Rules';
+
+  factory ModelInfo.fromJson(Map<String, dynamic> json) {
+    return ModelInfo(
+      artifactVersion: json['artifact_version'] as String? ?? 'v1',
+      mode: json['mode'] == 'model_plus_rules' ? ModelMode.model_plus_rules : ModelMode.heuristic_only,
+      engineVersion: json['engine_version'] as String? ?? '0.1.0',
+    );
+  }
 }
 
 // transaction_summary sub-object
@@ -114,6 +162,17 @@ class TransactionSummary {
     this.cardNetwork,
     this.fundingType,
   });
+
+  factory TransactionSummary.fromJson(Map<String, dynamic> json) {
+    return TransactionSummary(
+      amount: (json['amount'] as num).toDouble(),
+      currency: json['currency'] as String,
+      channel: json['channel'] as String,
+      productCode: json['product_code'] as String?,
+      cardNetwork: json['card_network'] as String?,
+      fundingType: json['funding_type'] as String?,
+    );
+  }
 }
 
 // Root response object for /v1/score
@@ -168,4 +227,45 @@ class RiskResult {
 
   String get domainLabel =>
       domain == 'paysim' ? 'UPI / PaySim' : 'Card / IEEE-CIS';
+
+  factory RiskResult.fromJson(Map<String, dynamic> json) {
+    return RiskResult(
+      requestId: json['request_id'] as String? ?? '',
+      transactionId: json['transaction_id'] as String? ?? '',
+      domain: json['domain'] as String,
+      level: RiskLevel.values.firstWhere(
+        (e) => e.name == (json['level'] ?? json['risk']?['level']),
+        orElse: () => RiskLevel.low),
+      score: (json['score'] as num? ?? json['risk']?['score'] as num? ?? 0).toDouble(),
+      decision: RiskDecision.values.firstWhere(
+        (e) => e.name == (json['decision'] ?? json['risk']?['decision']),
+        orElse: () => RiskDecision.allow),
+      confidence: (json['confidence'] as num? ?? 0).toDouble(),
+      scores: json['scores'] != null
+          ? ScoreBreakdown.fromJson(json['scores'] as Map<String, dynamic>)
+          : const ScoreBreakdown(heuristic: 0, fusionVersion: 'default_v1'),
+      signals: (json['signals'] as List<dynamic>? ?? [])
+          .map((s) => RiskSignal.fromJson(s as Map<String, dynamic>))
+          .toList(),
+      topReasons: (json['top_reasons'] as List<dynamic>? ??
+                   json['explanations']?['top_reasons'] as List<dynamic>? ?? [])
+          .map((r) => r as String)
+          .toList(),
+      featureContributions: (json['feature_contributions'] as List<dynamic>? ??
+                              json['explanations']?['feature_contributions'] as List<dynamic>? ?? [])
+          .map((f) => FeatureContribution.fromJson(f as Map<String, dynamic>))
+          .toList(),
+      features: json['features'] as Map<String, dynamic>? ?? {},
+      alerts: (json['alerts'] as List<dynamic>? ?? [])
+          .map((a) => EmbeddedAlert.fromJson(a as Map<String, dynamic>))
+          .toList(),
+      transactionSummary: json['transaction_summary'] != null
+          ? TransactionSummary.fromJson(json['transaction_summary'] as Map<String, dynamic>)
+          : const TransactionSummary(amount: 0, currency: '', channel: ''),
+      model: json['model'] != null
+          ? ModelInfo.fromJson(json['model'] as Map<String, dynamic>)
+          : const ModelInfo(artifactVersion: 'v1', mode: ModelMode.heuristic_only, engineVersion: '0.1.0'),
+      latencyMs: json['latency_ms'] as int? ?? 0,
+    );
+  }
 }

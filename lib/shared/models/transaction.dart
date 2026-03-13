@@ -31,4 +31,19 @@ class Transaction {
 
   // Convert 0–1 to 0–100 integer for progress bar display
   int get riskPercent => (riskScore * 100).round();
+
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    return Transaction(
+      id: json['id'] as String,
+      domain: json['domain'] as String,
+      type: json['type'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      currency: json['currency'] as String,
+      sender: json['sender'] as String,
+      receiver: json['receiver'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      riskScore: (json['risk_score'] as num).toDouble(),
+      level: json['level'] as String,
+    );
+  }
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../../core/provider/transactions_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/mock_data.dart';
 import '../../../shared/models/transaction.dart';
 import '../../../shared/widgets/app_shell.dart';
 import '../../../shared/widgets/status_badge.dart';
@@ -16,19 +17,24 @@ class TransactionsScreen extends StatefulWidget {
 class _TransactionsScreenState extends State<TransactionsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabs;
-  String _search     = '';
-  String? _levelFilter; // "low" | "medium" | "high" | null
+  String _search = '';
+  String? _levelFilter;
 
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<TransactionsProvider>();
+      if (provider.state == TransactionsLoadState.idle) {
+        provider.loadTransactions();
+      }
+    });
   }
 
-  List<Transaction> get _filteredTx {
-    // tab 0 = all, 1 = paysim, 2 = ieee_cis
+  List<Transaction> _filteredTx(List<Transaction> all) {
     final domainFilter = [null, 'paysim', 'ieee_cis'][_tabs.index];
-    return MockData.transactions.where((tx) {
+    return all.where((tx) {
       final matchDomain = domainFilter == null || tx.domain == domainFilter;
       final matchSearch = _search.isEmpty ||
           tx.id.toLowerCase().contains(_search.toLowerCase()) ||
@@ -44,22 +50,29 @@ class _TransactionsScreenState extends State<TransactionsScreen>
     return AppShell(
       currentRoute: '/transactions',
       pageTitle: 'Transactions',
-      child: Column(
-        children: [
-          _buildToolbar(),
-          Expanded(child: _buildTable()),
-        ],
+      child: Consumer<TransactionsProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final txs = _filteredTx(provider.transactions);
+          return Column(
+            children: [
+              _buildToolbar(txs.length),
+              Expanded(child: _buildTable(txs)),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildToolbar() {
+  Widget _buildToolbar(int resultCount) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       color: AppColors.surface,
       child: Column(
         children: [
-          // Domain tabs — label matches contract domain strings
           TabBar(
             controller: _tabs,
             onTap: (_) => setState(() {}),
@@ -78,7 +91,8 @@ class _TransactionsScreenState extends State<TransactionsScreen>
           const SizedBox(height: 12),
           Row(children: [
             SizedBox(
-              width: 280, height: 36,
+              width: 280,
+              height: 36,
               child: TextField(
                 onChanged: (v) => setState(() => _search = v),
                 style: AppTheme.mono(size: 13),
@@ -91,27 +105,32 @@ class _TransactionsScreenState extends State<TransactionsScreen>
               ),
             ),
             const SizedBox(width: 12),
-            // Level filter chips — contract enum: low | medium | high
             ...[null, 'high', 'medium', 'low'].map((l) => Padding(
               padding: const EdgeInsets.only(right: 8),
               child: FilterChip(
                 label: Text(l == null ? 'All' : l.toUpperCase()),
                 selected: _levelFilter == l,
                 onSelected: (_) => setState(() => _levelFilter = l),
-                labelStyle: AppTheme.mono(size: 10,
-                    color: _levelFilter == l
-                        ? AppColors.textPrimary : AppColors.textSecondary),
+                labelStyle: AppTheme.mono(
+                  size: 10,
+                  color: _levelFilter == l
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
+                ),
                 backgroundColor: AppColors.card,
-                selectedColor: AppColors.primary.withOpacity(0.2),
-                side: BorderSide(color: _levelFilter == l
-                    ? AppColors.primary : AppColors.border),
+                selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                side: BorderSide(
+                  color: _levelFilter == l ? AppColors.primary : AppColors.border,
+                ),
                 padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
               ),
             )),
             const Spacer(),
-            Text('${_filteredTx.length} results',
-                style: AppTheme.mono(size: 12, color: AppColors.textSecondary)),
+            Text(
+              '$resultCount results',
+              style: AppTheme.mono(size: 12, color: AppColors.textSecondary),
+            ),
           ]),
           const SizedBox(height: 12),
         ],
@@ -119,16 +138,14 @@ class _TransactionsScreenState extends State<TransactionsScreen>
     );
   }
 
-  Widget _buildTable() {
-    final txs    = _filteredTx;
-
+  Widget _buildTable(List<Transaction> txs) {
     if (txs.isEmpty) {
       return Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.search_off, size: 48, color: AppColors.textMuted),
           const SizedBox(height: 12),
-          Text('No transactions found', style: AppTheme.sans(
-              size: 15, color: AppColors.textSecondary)),
+          Text('No transactions found',
+              style: AppTheme.sans(size: 15, color: AppColors.textSecondary)),
         ]),
       );
     }
@@ -141,7 +158,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -150,10 +167,9 @@ class _TransactionsScreenState extends State<TransactionsScreen>
       clipBehavior: Clip.hardEdge,
       child: Column(
         children: [
-          // Sticky Header
           Container(
             decoration: const BoxDecoration(
-              color: AppColors.surface, // Slightly offset background for header
+              color: AppColors.surface,
               border: Border(bottom: BorderSide(color: AppColors.border, width: 2)),
             ),
             child: Row(
@@ -164,7 +180,6 @@ class _TransactionsScreenState extends State<TransactionsScreen>
                   .toList(),
             ),
           ),
-          // Scrollable Data Rows
           Expanded(
             child: ListView.builder(
               itemCount: txs.length,
@@ -182,7 +197,6 @@ class _TransactionsScreenState extends State<TransactionsScreen>
     );
   }
 
-  // Helper to maintain exact column widths across header and rows
   int _getColumnFlex(int index) {
     const flexes = [12, 8, 10, 15, 16, 16, 10, 10, 14];
     return flexes[index];
@@ -205,7 +219,6 @@ class _TransactionsScreenState extends State<TransactionsScreen>
   }
 }
 
-// --- NEW STATEFUL WIDGET FOR HOVER EFFECTS ---
 class _HoverTxRow extends StatefulWidget {
   final Transaction tx;
   final bool isLast;
@@ -214,10 +227,10 @@ class _HoverTxRow extends StatefulWidget {
   const _HoverTxRow({required this.tx, required this.isLast, required this.flexFns});
 
   @override
-  __HoverTxRowState createState() => __HoverTxRowState();
+  _HoverTxRowState createState() => _HoverTxRowState();
 }
 
-class __HoverTxRowState extends State<_HoverTxRow> {
+class _HoverTxRowState extends State<_HoverTxRow> {
   bool _isHovered = false;
 
   @override
@@ -232,20 +245,19 @@ class __HoverTxRowState extends State<_HoverTxRow> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         decoration: BoxDecoration(
-            color: _isHovered
-                ? AppColors.primary.withOpacity(0.05)
-                : (isHighRisk ? AppColors.fraudDim.withOpacity(0.1) : Colors.transparent),
-            // Adds a subtle left border on hover for focus
-            border: Border(
-              left: BorderSide(
-                  color: _isHovered ? AppColors.primary : Colors.transparent,
-                  width: 3
-              ),
-              bottom: widget.isLast ? BorderSide.none : const BorderSide(color: AppColors.border),
-            )
+          color: _isHovered
+              ? AppColors.primary.withValues(alpha: 0.05)
+              : (isHighRisk ? AppColors.fraudDim.withValues(alpha: 0.1) : Colors.transparent),
+          border: Border(
+            left: BorderSide(
+              color: _isHovered ? AppColors.primary : Colors.transparent,
+              width: 3,
+            ),
+            bottom: widget.isLast ? BorderSide.none : const BorderSide(color: AppColors.border),
+          ),
         ),
         child: InkWell(
-          onTap: () { /* TODO: Open transaction details modal */ },
+          onTap: () {},
           child: Row(
             children: [
               _cell(widget.tx.id, 0, mono: true),
@@ -269,11 +281,13 @@ class __HoverTxRowState extends State<_HoverTxRow> {
         flex: widget.flexFns(index),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Text(text,
-              style: mono
-                  ? AppTheme.mono(size: size, color: muted ? AppColors.textSecondary : AppColors.textPrimary)
-                  : AppTheme.sans(size: size, color: muted ? AppColors.textSecondary : AppColors.textPrimary),
-              overflow: TextOverflow.ellipsis),
+          child: Text(
+            text,
+            style: mono
+                ? AppTheme.mono(size: size, color: muted ? AppColors.textSecondary : AppColors.textPrimary)
+                : AppTheme.sans(size: size, color: muted ? AppColors.textSecondary : AppColors.textPrimary),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       );
 
@@ -286,8 +300,11 @@ class __HoverTxRowState extends State<_HoverTxRow> {
   );
 
   Widget _riskCell(int riskPercent, double rawScore, int index) {
-    final color = rawScore >= 0.70 ? AppColors.fraud
-        : rawScore >= 0.40 ? AppColors.suspicious : AppColors.safe;
+    final color = rawScore >= 0.70
+        ? AppColors.fraud
+        : rawScore >= 0.40
+            ? AppColors.suspicious
+            : AppColors.safe;
     return Expanded(
       flex: widget.flexFns(index),
       child: Padding(
@@ -298,7 +315,9 @@ class __HoverTxRowState extends State<_HoverTxRow> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                boxShadow: _isHovered ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 4)] : [],
+                boxShadow: _isHovered
+                    ? [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 4)]
+                    : [],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(4),
@@ -316,5 +335,4 @@ class __HoverTxRowState extends State<_HoverTxRow> {
     );
   }
 }
-
 

@@ -127,7 +127,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 ? AppColors.textPrimary
                 : AppColors.textSecondary),
         backgroundColor: AppColors.card,
-        selectedColor: AppColors.primary.withOpacity(0.15),
+        selectedColor: AppColors.primary.withValues(alpha: 0.15),
         side: BorderSide(
             color: _priorityFilter == p
                 ? AppColors.primary
@@ -144,7 +144,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 ? AppColors.textPrimary
                 : AppColors.textSecondary),
         backgroundColor: AppColors.card,
-        selectedColor: AppColors.primary.withOpacity(0.15),
+        selectedColor: AppColors.primary.withValues(alpha: 0.15),
         side: BorderSide(
             color:
             _statusFilter == s ? AppColors.primary : AppColors.border),
@@ -172,7 +172,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
     decoration: BoxDecoration(
       color: AppColors.fraudDim,
       borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: AppColors.fraud.withOpacity(0.4)),
+      border: Border.all(color: AppColors.fraud.withValues(alpha: 0.4)),
     ),
     child: Row(children: [
       const Icon(Icons.error_outline, color: AppColors.fraud, size: 18),
@@ -226,7 +226,7 @@ class _AlertCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
                 color: isExpanded
-                    ? accentColor.withOpacity(0.5)
+                    ? accentColor.withValues(alpha: 0.5)
                     : AppColors.border),
           ),
           child: Column(
@@ -260,7 +260,7 @@ class _AlertCard extends StatelessWidget {
                               boxShadow: [
                                 BoxShadow(
                                   color: AppColors.primary
-                                      .withOpacity(0.4 * value),
+                                      .withValues(alpha: 0.4 * value),
                                   blurRadius: 6 * value,
                                   spreadRadius: 1 * value,
                                 )
@@ -304,10 +304,10 @@ class _AlertCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: accentColor.withOpacity(0.1),
+                      color: accentColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                       border:
-                      Border.all(color: accentColor.withOpacity(0.3)),
+                      Border.all(color: accentColor.withValues(alpha: 0.3)),
                     ),
                     child: Text('${alert.riskPercent}',
                         style: AppTheme.mono(
@@ -399,7 +399,7 @@ class _AlertCard extends StatelessWidget {
         icon: Icon(icon, size: 14, color: color),
         label: Text(label, style: AppTheme.sans(size: 12, color: color)),
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: color.withOpacity(0.4)),
+          side: BorderSide(color: color.withValues(alpha: 0.4)),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           minimumSize: Size.zero,
         ),

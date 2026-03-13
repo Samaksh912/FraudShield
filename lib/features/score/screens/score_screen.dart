@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/mock_data.dart';
+import '../../../core/services/api_service.dart';
 import '../../../shared/models/risk_result.dart';
 import '../../../shared/widgets/app_shell.dart';
 import '../../../shared/widgets/status_badge.dart';
@@ -45,18 +46,54 @@ class _ScoreScreenState extends State<ScoreScreen> {
   final _cardNetworks   = ['visa', 'mastercard', 'discover', 'amex'];
   final _fundingTypes   = ['credit', 'debit'];
 
-  // Picks the matching mock result so demo feels realistic per domain + scenario
+  // Build the API payload and call /v1/score, fallback to mock on failure
   void _score() async {
     setState(() { _loading = true; _result = null; });
-    await Future.delayed(const Duration(milliseconds: 1200));
-    final result = _domain == 'paysim'
-        ? (double.tryParse(_psAmount.text) ?? 0) > 50000
-        ? MockData.paySimHighRisk
-        : MockData.paySimLowRisk
-        : (double.tryParse(_ieAmount.text) ?? 0) > 100
-        ? MockData.ieeeMediumRisk
-        : MockData.ieeeHighRisk;
-    setState(() { _loading = false; _result = result; });
+
+    try {
+      final payload = _domain == 'paysim'
+          ? {
+              'domain': 'paysim',
+              'transaction': {
+                'step': int.tryParse(_psStep.text) ?? 278,
+                'type': _psType,
+                'amount': double.tryParse(_psAmount.text) ?? 0,
+                'nameOrig': _psNameOrig.text,
+                'nameDest': _psNameDest.text,
+                'oldbalanceOrg': double.tryParse(_psOldBal.text) ?? 0,
+                'newbalanceOrig': double.tryParse(_psNewBal.text) ?? 0,
+              },
+            }
+          : {
+              'domain': 'ieee_cis',
+              'transaction': {
+                'TransactionDT': int.tryParse(_ieDT.text) ?? 86400,
+                'TransactionAmt': double.tryParse(_ieAmount.text) ?? 0,
+                'ProductCD': _ieProductCD,
+                'card1': int.tryParse(_ieCard1.text) ?? 0,
+                'card4': _ieCard4,
+                'card6': _ieCard6,
+                'addr1': int.tryParse(_ieAddr1.text) ?? 0,
+                'addr2': int.tryParse(_ieAddr2.text) ?? 0,
+                'P_emaildomain': _iePEmail.text,
+                'R_emaildomain': _ieREmail.text,
+                'DeviceType': _ieDeviceType,
+              },
+            };
+
+      final result = await ApiService.scoreTransaction(payload);
+      setState(() { _loading = false; _result = result; });
+    } catch (_) {
+      // Fallback to mock data if backend is unreachable
+      final result = _domain == 'paysim'
+          ? (double.tryParse(_psAmount.text) ?? 0) > 50000
+              ? MockData.paySimHighRisk
+              : MockData.paySimLowRisk
+          : (double.tryParse(_ieAmount.text) ?? 0) > 100
+              ? MockData.ieeeMediumRisk
+              : MockData.ieeeHighRisk;
+      setState(() { _loading = false; _result = result; });
+    }
   }
 
   @override

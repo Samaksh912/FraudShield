@@ -4,7 +4,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 
 class DomainSplitChart extends StatefulWidget {
-  const DomainSplitChart({super.key});
+  final Map<String, double> data;
+  const DomainSplitChart({super.key, required this.data});
 
   @override
   State<DomainSplitChart> createState() => _DomainSplitChartState();
@@ -23,7 +24,7 @@ class _DomainSplitChartState extends State<DomainSplitChart> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -59,10 +60,7 @@ class _DomainSplitChartState extends State<DomainSplitChart> {
                       ),
                       sectionsSpace: 4, // More breathing room
                       centerSpaceRadius: 36,
-                      sections: [
-                        _buildSection(0, 58.4, AppColors.primary),
-                        _buildSection(1, 41.6, const Color(0xFF8B5CF6)),
-                      ],
+                      sections: _buildSections(),
                     ),
                     swapAnimationDuration: const Duration(milliseconds: 250),
                     swapAnimationCurve: Curves.easeOutBack,
@@ -72,11 +70,7 @@ class _DomainSplitChartState extends State<DomainSplitChart> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _legendRow(AppColors.primary, 'UPI (PaySim)', '58.4%', isHovered: _touchedIndex == 0),
-                    const SizedBox(height: 16),
-                    _legendRow(const Color(0xFF8B5CF6), 'Card (IEEE-CIS)', '41.6%', isHovered: _touchedIndex == 1),
-                  ],
+                  children: _buildLegend(),
                 ),
               ],
             ),
@@ -86,13 +80,34 @@ class _DomainSplitChartState extends State<DomainSplitChart> {
     );
   }
 
+  static const _sectionColors = [AppColors.primary, Color(0xFF8B5CF6)];
+
+  List<PieChartSectionData> _buildSections() {
+    final entries = widget.data.entries.toList();
+    return entries.asMap().entries.map((e) {
+      final color = _sectionColors[e.key % _sectionColors.length];
+      return _buildSection(e.key, e.value.value, color);
+    }).toList();
+  }
+
+  List<Widget> _buildLegend() {
+    final entries = widget.data.entries.toList();
+    final widgets = <Widget>[];
+    for (int i = 0; i < entries.length; i++) {
+      final color = _sectionColors[i % _sectionColors.length];
+      widgets.add(_legendRow(color, entries[i].key, '${entries[i].value}%', isHovered: _touchedIndex == i));
+      if (i < entries.length - 1) widgets.add(const SizedBox(height: 16));
+    }
+    return widgets;
+  }
+
   PieChartSectionData _buildSection(int index, double value, Color color) {
     final isTouched = index == _touchedIndex;
     final radius = isTouched ? 34.0 : 28.0;
 
     return PieChartSectionData(
       value: value,
-      color: color.withOpacity(isTouched ? 1.0 : 0.8),
+      color: color.withValues(alpha: isTouched ? 1.0 : 0.8),
       title: '',
       radius: radius,
       borderSide: isTouched ? BorderSide(color: color, width: 2) : BorderSide.none,
@@ -111,7 +126,7 @@ class _DomainSplitChartState extends State<DomainSplitChart> {
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(3),
-              boxShadow: isHovered ? [BoxShadow(color: color.withOpacity(0.5), blurRadius: 6)] : [],
+              boxShadow: isHovered ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 6)] : [],
             )
         ),
         const SizedBox(width: 10),
